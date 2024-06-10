@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Login.Larsil</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .info-box {
+      margin-top: 20px;
+    }
+    .info-box div {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="menu-lateral">
+    <div class="btn-expandir">
+      <i class="bi bi-list"></i>
+    </div>
+    <ul>
+      <li class="item-menu" data-submenu="envelope-submenu">
+        <a href="#">
+          <span class="icon"><i class="bi bi-envelope"></i></span>
+          <span class="txt-link">Envelope</span>
+        </a>
+      </li>
+      <li class="item-menu" data-submenu="messages-submenu">
+        <a href="#">
+          <span class="icon"><i class="bi bi-chat-right-text"></i></span>
+          <span class="txt-link">Mensagens</span>
+        </a>
+      </li>
+      <li class="item-menu" data-submenu="vehicles-submenu">
+        <a href="#">
+          <span class="icon"><i class="bi bi-sign-stop-lights"></i></span>
+          <span class="txt-link">Veículos</span>
+        </a>
+      </li>
+      <li class="item-menu" data-submenu="dds-submenu">
+        <a href="#">
+          <span class="icon"><i class="bi bi-book"></i></span>
+          <span class="txt-link">DDS</span>
+        </a>
+      </li>
+      <li class="item-menu" data-submenu="account-submenu">
+        <a href="#">
+          <span class="icon"><i class="bi bi-person-lines-fill"></i></span>
+          <span class="txt-link">Conta</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="submenu-container">
+    <div id="vehicles-submenu" class="submenu">
+      <!-- Botão "Cadastrar Novo" -->
+      <button id="cadastrarNovoBtn">Cadastrar</button>
+      <div class="search-bar">
+        <input type="text" id="searchInput" class="search-txt" placeholder="Pesquisar...">
+      </div>
+      <!-- Formulário para cadastrar novo equipamento -->
+      <div id="cadastroEquipamentoForm" style="display: none;">
+        <form id="equipamentoForm">
+          <input type="text" id="empresa" placeholder="Nome da Empresa" required><br>
+          <input type="number" id="ano" placeholder="Ano" required><br>
+          <input type="number" id="valor" placeholder="Valor" required><br>
+          <input type="text" id="prefixo" placeholder="Prefixo" required><br>
+          <input type="text" id="placa" placeholder="Placa" required><br>
+          <input type="text" id="renavam" placeholder="Renavam" required><br>
+          <label for="status">Status:</label>
+          <select id="status" required>
+            <option value="comprado">Comprado</option>
+            <option value="vendido">Vendido</option>
+          </select><br>
+          <button type="submit">Cadastrar</button>
+        </form>
+      </div>
+      <!-- Caixa para exibir as informações cadastradas -->
+      <div id="infoVeiculos" class="info-box" style="display: none;">
+        <h2>Informações dos Veículos Cadastrados</h2>
+        <div id="veiculos"></div>
+      </div>
+    </div>
+    <div id="envelope-submenu" class="submenu">
+      <!-- Botões de ação que aparecerão no submenu -->
+      <div id="action-buttons" class="hidden">
+        <button onclick="acaoBotao('a-caminho')">A Caminho</button>
+        <button onclick="acaoBotao('finalizado')">Finalizado</button>
+      </div>
+      <form id="uploadForm" enctype="multipart/form-data">
+        <button type="button" id="uploadBtn">Upload de Arquivos</button>
+        <input type="file" id="fileInput" name="file" style="display: none;">
+      </form>
+      <button id="takePhotoBtn">Tirar Foto</button>
+      <video id="video" width="400" height="300" style="display: none;"></video>
+      <canvas id="canvas" width="400" height="300" style="display: none;"></canvas>
+    </div>
+    <div id="dds-submenu" class="submenu">
+      <div class="search-bar">
+        <input type="text" id="searchNome" placeholder="Nome">
+        <input type="text" id="searchRegistro" placeholder="N. Registro">
+        <button type="button" id="searchDDSBtn">Buscar</button>
+      </div>
+      <!-- Conteúdo do DDS -->
+      <div id="ddsContent">
+        <!-- Informações do DDS -->
+      </div>
+    </div>
+    <div id="account-submenu" class="submenu">
+      <p>Configurações da Conta</p>
+      <p>Última vez logado: <span id="last-login">01/01/2024 12:00</span></p>
+      <!-- Formulário para mudar de senha -->
+      <form id="changePasswordForm">
+        <input type="password" id="currentPassword" placeholder="Senha atual" required><br>
+        <input type="password" id="newPassword" placeholder="Nova senha" required><br>
+        <input type="password" id="confirmNewPassword" placeholder="Confirmar nova senha" required><br>
+        <button type="submit">Alterar Senha</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="1.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('cadastrarNovoBtn').addEventListener('click', function() {
+        document.getElementById('cadastroEquipamentoForm').style.display = 'block';
+      });
+
+      // Capturar o formulário quando enviado
+      document.getElementById('equipamentoForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Impede o envio do formulário
+
+        // Captura dos valores dos campos do formulário
+        var empresa = document.getElementById('empresa').value;
+        var ano = document.getElementById('ano').value;
+        var valor = document.getElementById('valor').value;
+        var prefixo = document.getElementById('prefixo').value;
+        var placa = document.getElementById('placa').value;
+        var renavam = document.getElementById('renavam').value;
+        var status = document.getElementById('status').value;
+
+        // Exibir os valores na caixa de informações
+        var veiculoInfo = document.createElement('div');
+        veiculoInfo.innerHTML = '<p><strong>Empresa:</strong> ' + empresa + '</p>' +
+                                '<p><strong>Ano:</strong> ' + ano + '</p>' +
+                                '<p><strong>Valor:</strong> ' + valor + '</p>' +
+                                '<p><strong>Prefixo:</strong> ' + prefixo + '</p>' +
+                                '<p><strong>Placa:</strong> ' + placa + '</p>' +
+                                '<p><strong>Renavam:</strong> ' + renavam + '</p>' +
+                                '<p><strong>Status:</strong> ' + status + '</p>';
+        document.getElementById('veiculos').appendChild(veiculoInfo);
+        document.getElementById('infoVeiculos').style.display = 'block';
+
+        // Limpar os campos do formulário
+        document.getElementById('equipamentoForm').reset();
+      });
+    });
+  </script>
+</body>
+</html>
+
